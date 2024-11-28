@@ -1,0 +1,44 @@
+# versão do docker que será utilizada
+# comentado porque é obsoleto
+# version: '3'
+
+# lista dos serviços que serão executados
+services:
+
+# primeiro serviço que será executado: laravel
+  laravel:
+    # define os parâmetros para o build
+    build:
+      # define a pasta onde está o Dockerfile que será utilizado
+      context: ./laravel
+      # define o arquivo Dockerfile que será utilizado
+      dockerfile: Dockerfile.prod
+    # imagem do container que irá subir para este serviço
+    # neste caso como está definido build de um dockerfile, ele irá subir com este nome de imagem
+    # caso não seja definido, iria procurar essa imagem já existente subir ela
+    # no caso de ter um build e não ter um image definido, ele irá subir com algum nome padrão
+    # no caso da imagem já existir no docker, só irá buildar novamente se utilizar o parâmetro --build
+    image: thainarafurforo/laravel:prod
+    # nome do container em que a imagem irá subir
+    container_name: laravel
+    # redes em que o container será conectado
+    networks:
+        - laranet
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.prod
+    image: thainarafurforo/nginx:prod
+    container_name: nginx
+    networks:
+      - laranet
+    # portas que serão expostas no container
+    ports:
+      - "8080:80"
+
+# cria ou utiliza networks que já existem no docker-compose
+# no caso da network default não é necessário especificar aqui
+networks:
+  laranet:
+    driver: bridge

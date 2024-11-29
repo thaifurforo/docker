@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mysql:5.7
+    # precisa rodar esse comando após o entrypoint pois dá erro se não rodar no boot
+    command: --innodb-use-native-aio=0
+    container_name: db
+    # se o comando cair, ele vai ser restartado
+    restart: always
+    # habilitar o acesso interativo ao container
+    tty: true
+    volumes:
+      # cria um volume nessa pasta pra copiar os dados do banco de dados, portanto caso derrube o container, ao subir de novo irá recuperar os dados
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+    - node-network
+
+networks:
+  node-network:
+    driver: bridge

@@ -1,4 +1,17 @@
 services:
+
+  app:
+    build:
+      context: node
+    container_name: app
+    networks:
+      - node-network
+    volumes:
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+       - "3000:3000"
+
   db:
     image: mysql:5.7
     # precisa rodar esse comando após o entrypoint pois dá erro se não rodar no boot

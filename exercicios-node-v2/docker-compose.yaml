@@ -1,0 +1,50 @@
+services:
+
+  app:
+    build:
+      context: node
+    container_name: app
+    # vai chamar o dockerize, pedir para esperar por 20seg para o container do db estar de pé, e depois chama o entrypoint
+    entrypoint: docker-entrypoint.sh
+    networks:
+      - node-network
+    volumes:
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+       - "3000:3000"
+    # só irá rodar esse container após rodar o container do db
+    depends_on:
+      db:
+    # depende do healthcheck do db pra startar esse container
+        condition: service_healthy
+
+  db:
+    image: mysql:5.7
+    # precisa rodar esse comando após o entrypoint pois dá erro se não rodar no boot
+    command: --innodb-use-native-aio=0
+    container_name: db
+    # se o comando cair, ele vai ser restartado
+    restart: always
+    # habilitar o acesso interativo ao container
+    tty: true
+    volumes:
+      # cria um volume nessa pasta pra copiar os dados do banco de dados, portanto caso derrube o container, ao subir de novo irá recuperar os dados
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+    - node-network
+    # adiciona o healthcheck do container db pra que só seja startado o container app quando este estiver healthy
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+networks:
+  node-network:
+    driver: bridge

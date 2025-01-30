@@ -34,12 +34,12 @@ services:
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_ROOT_PASSWORD=root
+
     networks:
     - node-network
     # adiciona o healthcheck do container db pra que só seja startado o container app quando este estiver healthy
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 3

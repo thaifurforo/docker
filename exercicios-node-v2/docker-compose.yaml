@@ -4,7 +4,6 @@ services:
     build:
       context: node
     container_name: app
-    # vai chamar o dockerize, pedir para esperar por 20seg para o container do db estar de pé, e depois chama o entrypoint
     entrypoint: docker-entrypoint.sh
     networks:
       - node-network
